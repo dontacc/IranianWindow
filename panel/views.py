@@ -13,11 +13,14 @@ from rest_framework import generics, serializers
 from django.db.models import Q
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.contrib.auth.hashers import check_password
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from datetime import timedelta
 
 
 
 
-def response_func(status ,msg, data):
+def response_func(status: bool ,msg: str, data: dict):
     res = {
         'status': status,
         'message': msg,
@@ -60,31 +63,72 @@ class RemotePost:
 
 # #getting all users in specific group
 
-    
-
-class Authontication(APIView):
+class Authentication(APIView):
 
     def post(self, request):
+        try:
+            user = User.objects.get(username__exact=request.data['userName'])
+            if check_password(request.data['password'], user.password):
 
-        refresh = RefreshToken.for_user(request.user)
+                refresh = RefreshToken.for_user(request.user)
+                print(refresh.payload['exp'])
+                
+
+                access_exp = refresh.access_token.lifetime/60
+                refresh_exp = refresh.lifetime/60
+
+                return Response(response_func(
+                        True,
+                        "",
+                        {
+                        'refresh': str(refresh),
+                        'access': str(refresh.access_token),
+                        'exp': access_exp,
+                        'expRefresh': refresh_exp,
+                    }
+                    ), status=status.HTTP_200_OK
+                    ) 
+            
+            return Response(response_func(
+                False,
+                "",
+                None
+            ), status=status.HTTP_200_OK
+            )
+            
+
+        except Exception as e:
+            return Response(response_func(
+                False,
+                "",
+                None
+            ), status=status.HTTP_401_UNAUTHORIZED
+            )
 
 
+
+class Refresh(APIView):
+    def post(self, request):
+
+        s = requests.post('http://localhost:8000/api/v1/panel/refresh-token/', 
+                          data={"refresh": request.data['refresh']})
+        
+        
+        
         return Response(response_func(
             True,
             "",
             {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-            'exp': int(refresh.access_token.payload['exp'])
-        }
+                'access': s.json()['access'],
+                'exp': timedelta(minutes=15)
+            }
         ), status=status.HTTP_200_OK
         ) 
 
 
+
+
         
-
-
-
 
 class Sms(generics.GenericAPIView):
     queryset = Group.objects.filter(id=3)

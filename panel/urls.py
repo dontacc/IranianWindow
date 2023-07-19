@@ -13,8 +13,10 @@ urlpatterns = [
     path('project-update/', ProjectUpdateAPI.as_view(), name='project-update'),
     path('search/', ProjectSearch.as_view(), name='search_project'),
 
-    path('authontication/', Authontication.as_view(), name=""),
-    path('token/', TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path('refres-token/', TokenRefreshView.as_view())
+    path('authentication/', Authentication.as_view(), name="login-authenticaion"),
+    # path('token/', TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path('refresh-token/', TokenRefreshView.as_view(), name="refresh"),
+
+    path('refresh/', Refresh.as_view())
 
 ]
