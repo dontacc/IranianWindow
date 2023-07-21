@@ -11,6 +11,8 @@ class SmsSerializer(serializers.Serializer):
 class ProjectSerializer(serializers.Serializer):
     employeeUsername = serializers.CharField(allow_null=False, required=True)
     employerUsername = serializers.CharField(allow_null=False, required=True)
+    employeeName = serializers.CharField(allow_null=False, required=True)
+    employerName = serializers.CharField(allow_null=False, required=True)
     employeeSms = serializers.BooleanField(default=False)
     employerSms = serializers.BooleanField(default=False)
     connection = serializers.CharField(allow_null=True, required=False)
@@ -25,7 +27,7 @@ class ProjectSerializer(serializers.Serializer):
     visit = serializers.BooleanField(default=False)
     inPerson = serializers.BooleanField(default=False)
     checkout = serializers.BooleanField(default=False)
-    immediate = serializers.BooleanField(default=False)
+    advice = serializers.BooleanField(default=False)
 
     
 
@@ -37,11 +39,11 @@ class ProjectsSerializer(serializers.ModelSerializer):
 
 class PartialSerializer(serializers.ModelSerializer):
     id = serializers.CharField(max_length=1000)
-    checkDate = serializers.DateField()
+    # checkDate = serializers.DateField()
     
     class Meta:
         model = Project
-        fields = ['id', 'checkDate']
+        fields = ['id']
 
 
 class PartialProjectSerializer(serializers.ModelSerializer):

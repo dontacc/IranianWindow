@@ -4,6 +4,6 @@ from import_export.admin import ImportExportModelAdmin
 
 @admin.register(Project)
 class ProjectAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('id', 'employee', 'employer', 'registered_date', 'state')
+    list_display = ('id', 'employee', 'employer', 'first_date', 'state')
     list_filter = ('employee', 'state')
 
