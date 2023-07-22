@@ -18,7 +18,7 @@ class Project(models.Model):
 
     connection = models.CharField(max_length=256, null=True, blank=True)
     first_date = models.DateField(auto_now_add=True) # emroz
-    check_date = models.DateField(default=None) # masalan pas farda mikhaym checkesh konam
+    check_date = models.DateTimeField(default=None) # masalan pas farda mikhaym checkesh konam
     how_meet = models.CharField(max_length=256, null=True, blank=True)
     state = models.SmallIntegerField(choices=STATE_CHOICES, default=0)
     level = models.CharField(default='', max_length=512)

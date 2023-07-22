@@ -19,6 +19,7 @@ from datetime import timedelta
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_protect
 from datetime import datetime
+from rest_framework.generics import ListAPIView
 
 
 
@@ -247,13 +248,13 @@ class NotTrackedProjectListAPI(generics.ListAPIView):
     
 
 
-class ProjectCreateAPI(generics.GenericAPIView):
+class ProjectCreateAPI(APIView):
     # queryset = Project.objects.all()
     # serializer_class = ProjectSerializer
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         # serializer = self.serializer_class(data=request.data)
         # print(request.data)
 
@@ -384,10 +385,41 @@ class ProjectRetrieveAPI(generics.RetrieveAPIView):
 
 
 
-
-
-class ProjectUpdateAPI(generics.GenericAPIView):
+class ProjectUpdateAPI(APIView):
     permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        project = Project.objects.get(id=request.data['projectId'])
+
+
+        return Response(response_func(
+            True,
+            "",
+            {
+                'address': project.address,
+                'advice' : project.advice,
+                'checkDate': int(project.check_date.timestamp()),
+                'checkout': project.checkout,
+                'connection': project.connection,
+                'employeeActiveSms': '',
+                'employeeName': project.employee.first_name,
+                'employeeUsername': project.employee.username,
+
+                'employerActiveSms': '',
+                'employerName': project.employer.first_name,
+                'employerUsername': project.employer.username,
+                'floors': project.floor,
+                'howMeet': project.how_meet,
+                'inPerson': project.in_person,
+                'level': project.level,
+                'partner': project.partner,
+                'region': project.region,
+                'state': project.state,
+                'visit': project.visit,
+
+            }
+        ), status=status.HTTP_200_OK
+        )
 
 
     def post(self, request, *args, **kwargs):
@@ -396,7 +428,6 @@ class ProjectUpdateAPI(generics.GenericAPIView):
             second_to_datetime = datetime.fromtimestamp(request.data['checkDate']/1000)
 
             project.check_date = second_to_datetime
-            print(second_to_datetime)
             project.save()
 
             return Response(
@@ -412,20 +443,11 @@ class ProjectUpdateAPI(generics.GenericAPIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
     
-    
-
-        
 
 
 
 
 
-from rest_framework.generics import ListAPIView
-from django.db.models import Q
-from rest_framework.generics import ListAPIView
-from .models import Project
-from .serializers import ProjectSerializer
-from django.contrib.auth.models import User
 
 class ProjectSearch(APIView):
     serializer_class = ProjectSearchSerializer
